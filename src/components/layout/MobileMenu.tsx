@@ -28,7 +28,7 @@ export default function MobileMenu({ isOpen, onClose, links, user, onLogout }: M
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade-in" onClick={onClose} />
 
       {/* Panel */}
-      <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-zinc-950 border-l border-zinc-800 flex flex-col animate-slide-in-right">
+      <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] border-l border-zinc-800 flex flex-col animate-slide-in-right shadow-2xl shadow-black/60" style={{ backgroundColor: '#09090b' }}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 h-16 border-b border-zinc-800/60">
           <span className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Menu</span>

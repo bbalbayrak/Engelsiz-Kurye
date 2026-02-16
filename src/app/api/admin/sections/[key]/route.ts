@@ -11,38 +11,39 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
   const { key } = await params;
   const body = await request.json();
-  const db = getDb();
+  const db = await getDb();
 
-  const existing = db.prepare('SELECT key FROM site_sections WHERE key = ?').get(key);
-  if (!existing) {
+  const existing = await db.execute({ sql: 'SELECT key FROM site_sections WHERE key = ?', args: [key] });
+  if (existing.rows.length === 0) {
     return NextResponse.json({ error: 'Bolum bulunamadi.' }, { status: 404 });
   }
 
-  // Update visibility if provided
   if (typeof body.visible === 'boolean') {
-    db.prepare("UPDATE site_sections SET visible = ?, updated_at = datetime('now') WHERE key = ?")
-      .run(body.visible ? 1 : 0, key);
+    await db.execute({
+      sql: "UPDATE site_sections SET visible = ?, updated_at = datetime('now') WHERE key = ?",
+      args: [body.visible ? 1 : 0, key],
+    });
   }
 
-  // Update content if provided
   if (body.content && typeof body.content === 'object') {
-    db.prepare("UPDATE site_sections SET content = ?, updated_at = datetime('now') WHERE key = ?")
-      .run(JSON.stringify(body.content), key);
+    await db.execute({
+      sql: "UPDATE site_sections SET content = ?, updated_at = datetime('now') WHERE key = ?",
+      args: [JSON.stringify(body.content), key],
+    });
   }
 
-  const updated = db.prepare('SELECT key, page, label, visible, content, updated_at FROM site_sections WHERE key = ?').get(key) as {
-    key: string; page: string; label: string; visible: number; content: string; updated_at: string;
-  };
+  const updated = await db.execute({ sql: 'SELECT key, page, label, visible, content, updated_at FROM site_sections WHERE key = ?', args: [key] });
+  const r = updated.rows[0];
 
   return NextResponse.json({
     success: true,
     section: {
-      key: updated.key,
-      page: updated.page,
-      label: updated.label,
-      visible: updated.visible === 1,
-      content: JSON.parse(updated.content),
-      updatedAt: updated.updated_at,
+      key: r.key,
+      page: r.page,
+      label: r.label,
+      visible: r.visible === 1,
+      content: JSON.parse(r.content as string),
+      updatedAt: r.updated_at,
     },
   });
 }

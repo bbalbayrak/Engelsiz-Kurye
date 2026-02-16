@@ -16,63 +16,70 @@ export function verifyPassword(password: string, hash: string): boolean {
 }
 
 // ── Users ──
-export function createUser(name: string, email: string, password: string, role: string = 'courier') {
-  const db = getDb();
+export async function createUser(name: string, email: string, password: string, role: string = 'courier') {
+  const db = await getDb();
   const id = uuid();
   const passwordHash = hashPassword(password);
   try {
-    db.prepare('INSERT INTO users (id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)')
-      .run(id, name, email.toLowerCase().trim(), passwordHash, role);
+    await db.execute({
+      sql: 'INSERT INTO users (id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)',
+      args: [id, name, email.toLowerCase().trim(), passwordHash, role],
+    });
     return { id, name, email: email.toLowerCase().trim(), role };
   } catch (err: unknown) {
-    if (err instanceof Error && err.message.includes('UNIQUE constraint failed')) {
-      return null; // email already exists
+    if (err instanceof Error && err.message.includes('UNIQUE')) {
+      return null;
     }
     throw err;
   }
 }
 
-export function getUserByEmail(email: string) {
-  const db = getDb();
-  return db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase().trim()) as {
-    id: string; name: string; email: string; password_hash: string; role: string; created_at: string;
-  } | undefined;
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  const res = await db.execute({ sql: 'SELECT * FROM users WHERE email = ?', args: [email.toLowerCase().trim()] });
+  if (res.rows.length === 0) return undefined;
+  const r = res.rows[0];
+  return { id: r.id as string, name: r.name as string, email: r.email as string, password_hash: r.password_hash as string, role: r.role as string, created_at: r.created_at as string };
 }
 
-export function getUserById(id: string) {
-  const db = getDb();
-  return db.prepare('SELECT id, name, email, role, created_at FROM users WHERE id = ?').get(id) as {
-    id: string; name: string; email: string; role: string; created_at: string;
-  } | undefined;
+export async function getUserById(id: string) {
+  const db = await getDb();
+  const res = await db.execute({ sql: 'SELECT id, name, email, role, created_at FROM users WHERE id = ?', args: [id] });
+  if (res.rows.length === 0) return undefined;
+  const r = res.rows[0];
+  return { id: r.id as string, name: r.name as string, email: r.email as string, role: r.role as string, created_at: r.created_at as string };
 }
 
 // ── Sessions ──
-export function createSession(userId: string): string {
-  const db = getDb();
+export async function createSession(userId: string): Promise<string> {
+  const db = await getDb();
   const token = uuid();
   const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000).toISOString();
-  db.prepare('INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)').run(token, userId, expiresAt);
+  await db.execute({ sql: 'INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)', args: [token, userId, expiresAt] });
   return token;
 }
 
-export function getSessionUser(token: string) {
-  const db = getDb();
-  const session = db.prepare(`
-    SELECT s.user_id, s.expires_at, u.id, u.name, u.email, u.role
-    FROM sessions s JOIN users u ON s.user_id = u.id
-    WHERE s.id = ? AND s.expires_at > datetime('now')
-  `).get(token) as { user_id: string; name: string; email: string; role: string } | undefined;
-  return session ? { id: session.user_id, name: session.name, email: session.email, role: session.role } : null;
+export async function getSessionUser(token: string) {
+  const db = await getDb();
+  const res = await db.execute({
+    sql: `SELECT s.user_id, u.name, u.email, u.role
+          FROM sessions s JOIN users u ON s.user_id = u.id
+          WHERE s.id = ? AND s.expires_at > datetime('now')`,
+    args: [token],
+  });
+  if (res.rows.length === 0) return null;
+  const r = res.rows[0];
+  return { id: r.user_id as string, name: r.name as string, email: r.email as string, role: r.role as string };
 }
 
-export function deleteSession(token: string) {
-  const db = getDb();
-  db.prepare('DELETE FROM sessions WHERE id = ?').run(token);
+export async function deleteSession(token: string) {
+  const db = await getDb();
+  await db.execute({ sql: 'DELETE FROM sessions WHERE id = ?', args: [token] });
 }
 
-export function cleanExpiredSessions() {
-  const db = getDb();
-  db.prepare("DELETE FROM sessions WHERE expires_at <= datetime('now')").run();
+export async function cleanExpiredSessions() {
+  const db = await getDb();
+  await db.execute("DELETE FROM sessions WHERE expires_at <= datetime('now')");
 }
 
 // ── Cookie helpers ──
@@ -97,6 +104,6 @@ export async function getSessionFromCookie() {
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
-  if (token) deleteSession(token);
+  if (token) await deleteSession(token);
   cookieStore.delete(SESSION_COOKIE);
 }

@@ -9,17 +9,15 @@ export async function GET() {
     return NextResponse.json({ error: 'Yetkisiz erisim.' }, { status: 403 });
   }
 
-  const db = getDb();
-  const rows = db.prepare('SELECT key, page, label, visible, content, updated_at FROM site_sections ORDER BY page, key').all() as Array<{
-    key: string; page: string; label: string; visible: number; content: string; updated_at: string;
-  }>;
+  const db = await getDb();
+  const res = await db.execute('SELECT key, page, label, visible, content, updated_at FROM site_sections ORDER BY page, key');
 
-  const sections = rows.map(r => ({
+  const sections = res.rows.map(r => ({
     key: r.key,
     page: r.page,
     label: r.label,
     visible: r.visible === 1,
-    content: JSON.parse(r.content),
+    content: JSON.parse(r.content as string),
     updatedAt: r.updated_at,
   }));
 

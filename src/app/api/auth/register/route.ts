@@ -15,12 +15,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Gecerli bir e-posta adresi girin.' }, { status: 400 });
     }
 
-    const user = createUser(name.trim(), email, password, role || 'courier');
+    const user = await createUser(name.trim(), email, password, role || 'courier');
     if (!user) {
       return NextResponse.json({ error: 'Bu e-posta adresi zaten kayitli.' }, { status: 409 });
     }
 
-    const token = createSession(user.id);
+    const token = await createSession(user.id);
     await setSessionCookie(token);
 
     return NextResponse.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
