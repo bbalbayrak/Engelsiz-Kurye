@@ -25,12 +25,12 @@ export default function RegisterPage() {
     setError('');
 
     if (form.password !== form.confirmPassword) {
-      setError('Sifreler eslesmiyor.');
+      setError('Şifreler eşleşmiyor.');
       return;
     }
 
     if (form.password.length < 6) {
-      setError('Sifre en az 6 karakter olmalidir.');
+      setError('Şifre en az 6 karakter olmalıdır.');
       return;
     }
 
@@ -63,8 +63,8 @@ export default function RegisterPage() {
 
         {/* Card */}
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8">
-          <h1 className="text-2xl font-bold text-white mb-1">Kayit Ol</h1>
-          <p className="text-zinc-500 text-sm mb-6">Hesap olusturun ve engelleri bildirmeye baslayin.</p>
+          <h1 className="text-2xl font-bold text-white mb-1">Kayıt Ol</h1>
+          <p className="text-zinc-500 text-sm mb-6">Hesap oluşturun ve engelleri bildirmeye başlayın.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
@@ -75,7 +75,7 @@ export default function RegisterPage() {
                 required
                 value={form.name}
                 onChange={e => update('name', e.target.value)}
-                placeholder="Adiniz Soyadiniz"
+                placeholder="Adınız Soyadınız"
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all text-sm"
               />
             </div>
@@ -88,18 +88,18 @@ export default function RegisterPage() {
                 required
                 value={form.email}
                 onChange={e => update('email', e.target.value)}
-                placeholder="ornek@email.com"
+                placeholder="örnek@email.com"
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all text-sm"
               />
             </div>
 
             {/* Role */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Hesap Turu</label>
+              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Hesap Türü</label>
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { value: 'courier', label: 'Kurye', icon: '🏍️', desc: 'Engelleri bildirin' },
-                  { value: 'supporter', label: 'Destekci', icon: '🤝', desc: 'Kampanyaya destek' },
+                  { value: 'supporter', label: 'Destekçi', icon: '🤝', desc: 'Kampanyaya destek' },
                 ].map(opt => (
                   <label
                     key={opt.value}
@@ -121,7 +121,7 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Sifre</label>
+              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Şifre</label>
               <input
                 type="password"
                 required
@@ -134,13 +134,13 @@ export default function RegisterPage() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Sifre Tekrar</label>
+              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Şifre Tekrar</label>
               <input
                 type="password"
                 required
                 value={form.confirmPassword}
                 onChange={e => update('confirmPassword', e.target.value)}
-                placeholder="Sifrenizi tekrar girin"
+                placeholder="Şifrenizi tekrar girin"
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all text-sm"
               />
             </div>
@@ -164,26 +164,26 @@ export default function RegisterPage() {
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
-                  Kayit yapiliyor...
+                  Kayıt yapılıyor...
                 </>
               ) : (
-                'Kayit Ol'
+                'Kayıt Ol'
               )}
             </button>
           </form>
 
           <p className="text-[11px] text-zinc-600 text-center mt-4 leading-relaxed">
-            Kayit olarak{' '}
-            <span className="text-zinc-500">Kullanim Sartlarini</span> ve{' '}
-            <span className="text-zinc-500">Gizlilik Politikasini</span> kabul etmis olursunuz.
+            Kayıt olarak{' '}
+            <span className="text-zinc-500">Kullanım Şartlarını</span> ve{' '}
+            <span className="text-zinc-500">Gizlilik Politikasını</span> kabul etmiş olursunuz.
           </p>
         </div>
 
         {/* Login link */}
         <p className="text-center text-zinc-500 text-sm mt-6">
-          Zaten hesabiniz var mi?{' '}
+          Zaten hesabınız var mı?{' '}
           <Link href="/giris" className="text-amber-500 hover:text-amber-400 font-medium transition-colors">
-            Giris Yap
+            Giriş Yap
           </Link>
         </p>
       </div>

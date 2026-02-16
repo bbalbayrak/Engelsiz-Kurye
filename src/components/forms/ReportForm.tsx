@@ -30,7 +30,7 @@ export default function ReportForm() {
     setErrorMsg('');
 
     if (parseInt(form.captchaAnswer) !== captcha.answer) {
-      setErrorMsg('Guvenlik sorusu yanlis. Lutfen tekrar deneyin.');
+      setErrorMsg('Güvenlik sorusu yanlış. Lütfen tekrar deneyin.');
       refreshCaptcha();
       update('captchaAnswer', '');
       return;
@@ -49,10 +49,10 @@ export default function ReportForm() {
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || 'Bir hata olustu.');
+      if (!res.ok || !data.success) throw new Error(data.error || 'Bir hata oluştu.');
       setState('success');
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Bir hata olustu.');
+      setErrorMsg(err instanceof Error ? err.message : 'Bir hata oluştu.');
       setState('error');
       refreshCaptcha();
       update('captchaAnswer', '');
@@ -67,9 +67,9 @@ export default function ReportForm() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="text-2xl font-bold text-white mb-3">Bildiriminiz Alindi!</h3>
+        <h3 className="text-2xl font-bold text-white mb-3">Bildiriminiz Alındı!</h3>
         <p className="text-zinc-400 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
-          Engel bildiriminiz basariyla kaydedildi. Dogrulama surecinden sonra haritada gorunecektir.
+          Engel bildiriminiz başarıyla kaydedildi. Doğrulama sürecinden sonra haritada görünecektir.
         </p>
         <button
           onClick={() => {
@@ -109,7 +109,7 @@ export default function ReportForm() {
             <span className="text-sm text-zinc-400">Anonim olarak bildirilecek</span>
           </div>
           <Link href="/giris" className="text-xs text-amber-500 hover:text-amber-400 font-medium transition-colors whitespace-nowrap">
-            Giris Yap
+            Giriş Yap
           </Link>
         </div>
       )}
@@ -117,9 +117,9 @@ export default function ReportForm() {
       {/* Site Name + Address */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Mekan / Site Adi *</label>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Mekan / Site Adı *</label>
           <input type="text" required value={form.siteName} onChange={e => update('siteName', e.target.value)}
-            placeholder="Or: Greenwood Apartments" className={inputClass} />
+            placeholder="Ör: Greenwood Apartments" className={inputClass} />
         </div>
         <div>
           <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Adres</label>
@@ -131,18 +131,18 @@ export default function ReportForm() {
       {/* City & District */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Il *</label>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">İl *</label>
           <select required value={form.city} onChange={e => { update('city', e.target.value); update('district', ''); }}
             className={`${inputClass} appearance-none`}>
-            <option value="">Il Seciniz</option>
+            <option value="">İl Seçiniz</option>
             {cities.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Ilce *</label>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">İlçe *</label>
           <select required value={form.district} onChange={e => update('district', e.target.value)}
             className={`${inputClass} appearance-none`} disabled={!form.city}>
-            <option value="">Ilce Seciniz</option>
+            <option value="">İlçe Seçiniz</option>
             {availableDistricts.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
@@ -150,7 +150,7 @@ export default function ReportForm() {
 
       {/* Obstacle Type */}
       <div>
-        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Engel Turu *</label>
+        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Engel Türü *</label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {(Object.entries(OBSTACLE_CONFIG) as [ObstacleType, typeof OBSTACLE_CONFIG[ObstacleType]][]).map(([type, cfg]) => {
             const selected = form.obstacleType === type;
@@ -191,14 +191,14 @@ export default function ReportForm() {
 
       {/* Description */}
       <div>
-        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Ek Aciklama</label>
+        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Ek Açıklama</label>
         <textarea value={form.description} onChange={e => update('description', e.target.value)} rows={3}
-          placeholder="Yasadiginiz engeli kisaca anlatin..." className={`${inputClass} resize-none`} />
+          placeholder="Yaşadığınız engeli kısaca anlatın..." className={`${inputClass} resize-none`} />
       </div>
 
       {/* Captcha */}
       <div>
-        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Guvenlik Sorusu *</label>
+        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Güvenlik Sorusu *</label>
         <div className="flex items-center gap-3">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-3 font-mono text-lg text-amber-400 select-none tracking-wider">
             {captcha.question}
@@ -235,11 +235,11 @@ export default function ReportForm() {
         {state === 'loading' ? (
           <>
             <div className="w-5 h-5 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
-            Gonderiliyor...
+            Gönderiliyor...
           </>
         ) : (
           <>
-            Bildirimi Gonder
+            Bildirimi Gönder
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
@@ -249,8 +249,8 @@ export default function ReportForm() {
 
       <p className="text-[11px] text-zinc-600 text-center">
         {user
-          ? `${user.email} adresiyle bildirilecek. Dogrulama surecinden sonra haritada gorunecektir.`
-          : 'Bildirimleriniz anonim olarak kaydedilir ve dogrulama surecinden gecer.'
+          ? `${user.email} adresiyle bildirilecek. Doğrulama sürecinden sonra haritada görünecektir.`
+          : 'Bildirimleriniz anonim olarak kaydedilir ve doğrulama sürecinden geçer.'
         }
       </p>
     </form>

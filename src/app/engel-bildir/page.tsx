@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata = {
   title: 'Engel Bildir',
-  description: 'Karsilastiginiz teslimat engellerini bildirin ve haritada gorunur kilin.',
+  description: 'Karşılaştığınız teslimat engellerini bildirin ve haritada görünür kılın.',
 };
 
 export default function ReportPage() {
@@ -30,8 +30,8 @@ export default function ReportPage() {
             </div>
           </div>
           <p className="text-zinc-400 text-sm leading-relaxed max-w-lg">
-            Teslimat sirasinda karsilastiginiz engelleri bildirin. Bildirimleriniz dogrulama
-            surecinden sonra haritada gorunur hale gelecektir.
+            Teslimat sırasında karşılaştığınız engelleri bildirin. Bildirimleriniz doğrulama
+            sürecinden sonra haritada görünür hale gelecektir.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function ReportPage() {
           </div>
           <div>
             <p className="text-amber-400 text-sm font-medium">Anonim Bildirim</p>
-            <p className="text-zinc-500 text-xs mt-0.5">Kisisel bilgileriniz kaydedilmez. Tum bildirimler anonim olarak islenir.</p>
+            <p className="text-zinc-500 text-xs mt-0.5">Kişisel bilgileriniz kaydedilmez. Tüm bildirimler anonim olarak işlenir.</p>
           </div>
         </div>
 

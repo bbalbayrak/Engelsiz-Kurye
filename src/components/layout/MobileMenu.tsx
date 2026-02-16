@@ -31,7 +31,7 @@ export default function MobileMenu({ isOpen, onClose, links, user, onLogout }: M
       <div className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] border-l border-zinc-800 flex flex-col animate-slide-in-right shadow-2xl shadow-black/60" style={{ backgroundColor: '#09090b' }}>
         {/* Header */}
         <div className="flex items-center justify-between px-6 h-16 border-b border-zinc-800/60">
-          <span className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Menu</span>
+          <span className="text-sm font-semibold text-zinc-400 uppercase tracking-widest">Menü</span>
           <button
             onClick={onClose}
             className="flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-800/60 hover:bg-zinc-700 text-zinc-400 hover:text-white transition-all"
@@ -97,7 +97,7 @@ export default function MobileMenu({ isOpen, onClose, links, user, onLogout }: M
                 onClick={() => { onLogout(); onClose(); }}
                 className="flex items-center justify-center w-full py-3 rounded-xl text-sm font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition-all"
               >
-                Cikis Yap
+                Çıkış Yap
               </button>
             </div>
           ) : (
@@ -107,14 +107,14 @@ export default function MobileMenu({ isOpen, onClose, links, user, onLogout }: M
                 onClick={onClose}
                 className="flex items-center justify-center py-3 rounded-xl text-sm font-medium text-zinc-300 bg-zinc-800 hover:bg-zinc-700 transition-all"
               >
-                Giris Yap
+                Giriş Yap
               </Link>
               <Link
                 href="/kayit"
                 onClick={onClose}
                 className="flex items-center justify-center py-3 rounded-xl text-sm font-medium text-zinc-950 bg-zinc-100 hover:bg-white transition-all"
               >
-                Kayit Ol
+                Kayıt Ol
               </Link>
             </div>
           )}

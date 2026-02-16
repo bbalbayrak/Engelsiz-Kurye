@@ -111,7 +111,7 @@ function PopupContent({ report }: { report: ObstacleReport }) {
             fontSize: 10, fontWeight: 600, color: '#4ade80',
             background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.25)',
             borderRadius: 99, padding: '2px 8px', whiteSpace: 'nowrap',
-          }}>Dogrulanmis</span>
+          }}>Doğrulanmış</span>
         )}
       </div>
 

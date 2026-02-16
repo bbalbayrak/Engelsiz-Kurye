@@ -38,7 +38,7 @@ export default function StatsPanel() {
       <div className="grid grid-cols-3 divide-x divide-zinc-800/60 px-1 py-3">
         {[
           { value: String(total), label: 'Bildirim' },
-          { value: String(verified), label: 'Dogrulanan' },
+          { value: String(verified), label: 'Doğrulanan' },
           { value: String(total - verified), label: 'Bekleyen' },
         ].map((stat, i) => (
           <div key={i} className="text-center px-2">

@@ -25,7 +25,7 @@ export default function AboutPage() {
               {hero?.badge || 'Manifesto'}
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1]">
-              {hero?.title || 'Biz Sehri Tasiyoruz.'}
+              {hero?.title || 'Biz Şehri Taşıyoruz.'}
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
                 {hero?.highlight || 'Yolumuzu Kesmeyin.'}
@@ -47,7 +47,7 @@ export default function AboutPage() {
       <EditableSection sectionKey="about_pillars">
         <section className="py-20 px-4 sm:px-6 bg-zinc-900/30 border-y border-zinc-800/40">
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{pillarsData?.title || 'Temel Ilkelerimiz'}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{pillarsData?.title || 'Temel İlkelerimiz'}</h2>
             <p className="text-zinc-500 mb-10 text-sm">{pillarsData?.subtitle || ''}</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {(pillarsData?.items || []).map((p, i) => (
@@ -66,7 +66,7 @@ export default function AboutPage() {
       <EditableSection sectionKey="about_timeline">
         <section className="py-20 px-4 sm:px-6">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-10">{timelineData?.title || 'Yol Haritasi'}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-10">{timelineData?.title || 'Yol Haritası'}</h2>
             <div className="relative">
               <div className="absolute left-4 top-0 bottom-0 w-px bg-zinc-800" />
               <div className="space-y-10">
@@ -90,7 +90,7 @@ export default function AboutPage() {
       <EditableSection sectionKey="about_video">
         <section className="py-20 px-4 sm:px-6 bg-zinc-900/30 border-y border-zinc-800/40">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">{videoData?.title || 'Hikayemizi Izleyin'}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">{videoData?.title || 'Hikayemizi İzleyin'}</h2>
             <p className="text-zinc-500 mb-8 text-sm">{videoData?.subtitle || ''}</p>
             <div className="relative aspect-video bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 group cursor-pointer">
               <div className="absolute inset-0 bg-gradient-to-br from-zinc-800/80 to-zinc-900 flex items-center justify-center">
@@ -111,14 +111,14 @@ export default function AboutPage() {
       <EditableSection sectionKey="about_cta">
         <section className="py-20 px-4 sm:px-6">
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">{ctaData?.title || 'Kampanyaya Katilin'}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">{ctaData?.title || 'Kampanyaya Katılın'}</h2>
             <p className="text-zinc-400 mb-8 text-sm leading-relaxed">{ctaData?.description || ''}</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link href="/engel-bildir" className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-zinc-950 font-bold px-8 py-3.5 rounded-full text-sm transition-all shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40">
                 <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" /></span>
                 Engel Bildir
               </Link>
-              <Link href="/kaynaklar" className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-8 py-3.5 rounded-full text-sm transition-all border border-zinc-700">Materyalleri Gor</Link>
+              <Link href="/kaynaklar" className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-8 py-3.5 rounded-full text-sm transition-all border border-zinc-700">Materyalleri Gör</Link>
             </div>
           </div>
         </section>

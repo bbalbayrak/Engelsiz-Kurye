@@ -98,7 +98,7 @@ export default function Header() {
                   onClick={handleLogout}
                   className="text-sm font-medium text-zinc-500 hover:text-zinc-300 px-2 py-1.5 rounded-lg hover:bg-zinc-800/60 transition-all"
                 >
-                  Cikis
+                  Çıkış
                 </button>
               </div>
             </>
@@ -109,13 +109,13 @@ export default function Header() {
                 href="/giris"
                 className="hidden lg:inline-flex items-center text-sm font-medium text-zinc-400 hover:text-zinc-100 px-3 py-2 rounded-lg hover:bg-zinc-800/60 transition-all"
               >
-                Giris Yap
+                Giriş Yap
               </Link>
               <Link
                 href="/kayit"
                 className="hidden lg:inline-flex items-center text-sm font-medium text-zinc-950 bg-zinc-100 hover:bg-white px-4 py-2 rounded-lg transition-all"
               >
-                Kayit Ol
+                Kayıt Ol
               </Link>
             </>
           )}

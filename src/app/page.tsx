@@ -41,19 +41,19 @@ export default function HomePage() {
           <div className="bg-zinc-950/85 backdrop-blur-xl rounded-xl border border-zinc-800/60 px-3 py-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Canli</span>
+              <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Canlı</span>
             </div>
             <div className="flex items-center gap-3 text-[11px]">
               <span className="text-white font-bold">{mobileStats.total} <span className="text-zinc-500 font-normal">bildirim</span></span>
               <span className="w-px h-3 bg-zinc-700" />
-              <span className="text-emerald-400 font-bold">{mobileStats.verified} <span className="text-zinc-500 font-normal">dogrulanan</span></span>
+              <span className="text-emerald-400 font-bold">{mobileStats.verified} <span className="text-zinc-500 font-normal">doğrulanan</span></span>
             </div>
           </div>
         </div>
 
         <div className="absolute top-4 right-4 z-[1000] hidden lg:block">
           <div className="bg-zinc-950/85 backdrop-blur-xl rounded-xl border border-zinc-800/60 p-4 shadow-2xl shadow-black/40">
-            <h4 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-[0.15em] mb-3">Engel Turleri</h4>
+            <h4 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-[0.15em] mb-3">Engel Türleri</h4>
             <div className="flex flex-col gap-2">
               {legendItems.map((item) => (
                 <div key={item.label} className="flex items-center gap-2.5">
@@ -85,7 +85,7 @@ export default function HomePage() {
               {campaign?.badge || 'Kampanya'}
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-5 leading-tight">
-              {campaign?.title || 'Biz Sehri Tasiyoruz.'}{' '}
+              {campaign?.title || 'Biz Şehri Taşıyoruz.'}{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
                 {campaign?.highlight || 'Yolumuzu Kesmeyin.'}
               </span>
@@ -113,7 +113,7 @@ export default function HomePage() {
       <section className="py-8 px-4 bg-zinc-950 border-t border-zinc-800/40 lg:hidden">
         <div className="max-w-lg mx-auto">
           <h4 className="text-[10px] font-semibold text-zinc-500 uppercase tracking-[0.15em] mb-4 text-center">
-            Haritadaki Engel Turleri
+            Haritadaki Engel Türleri
           </h4>
           <div className="flex flex-wrap justify-center gap-2">
             {Object.entries(OBSTACLE_CONFIG).map(([key, cfg]) => (

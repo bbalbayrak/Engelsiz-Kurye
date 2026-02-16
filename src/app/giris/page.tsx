@@ -52,8 +52,8 @@ export default function LoginPage() {
 
         {/* Card */}
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 md:p-8">
-          <h1 className="text-2xl font-bold text-white mb-1">Giris Yap</h1>
-          <p className="text-zinc-500 text-sm mb-6">Hesabiniza giris yapin ve engelleri bildirin.</p>
+          <h1 className="text-2xl font-bold text-white mb-1">Giriş Yap</h1>
+          <p className="text-zinc-500 text-sm mb-6">Hesabınıza giriş yapın ve engelleri bildirin.</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Email */}
@@ -64,14 +64,14 @@ export default function LoginPage() {
                 required
                 value={form.email}
                 onChange={e => update('email', e.target.value)}
-                placeholder="ornek@email.com"
+                placeholder="örnek@email.com"
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all text-sm"
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Sifre</label>
+              <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Şifre</label>
               <input
                 type="password"
                 required
@@ -101,10 +101,10 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-zinc-400 border-t-transparent rounded-full animate-spin" />
-                  Giris yapiliyor...
+                  Giriş yapılıyor...
                 </>
               ) : (
-                'Giris Yap'
+                'Giriş Yap'
               )}
             </button>
           </form>
@@ -112,9 +112,9 @@ export default function LoginPage() {
 
         {/* Register link */}
         <p className="text-center text-zinc-500 text-sm mt-6">
-          Hesabiniz yok mu?{' '}
+          Hesabınız yok mu?{' '}
           <Link href="/kayit" className="text-amber-500 hover:text-amber-400 font-medium transition-colors">
-            Kayit Ol
+            Kayıt Ol
           </Link>
         </p>
       </div>

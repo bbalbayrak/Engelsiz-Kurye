@@ -27,7 +27,7 @@ export default function ResourcesPage() {
             Hukuki Rehber & <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">Kampanya Materyalleri</span>
           </h1>
           <p className="text-zinc-400 text-sm leading-relaxed max-w-2xl">
-            Kurye haklariyla ilgili yasal bilgilere erisin, kisitlamalari raporlayin ve kampanyayi desteklemek icin materyalleri indirin.
+            Kurye haklarıyla ilgili yasal bilgilere erişin, kısıtlamaları raporlayın ve kampanyayı desteklemek için materyalleri indirin.
           </p>
         </div>
 
@@ -37,7 +37,7 @@ export default function ResourcesPage() {
               <section>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center"><span className="text-lg">⚖️</span></div>
-                  <h2 className="text-lg font-bold text-white">{faqData?.title || 'Kurye Haklari SSS'}</h2>
+                  <h2 className="text-lg font-bold text-white">{faqData?.title || 'Kurye Hakları SSS'}</h2>
                 </div>
                 <p className="text-zinc-500 text-sm mb-5 leading-relaxed">{faqData?.subtitle || ''}</p>
                 <Accordion items={faqs.slice(0, 4)} />
@@ -48,11 +48,11 @@ export default function ResourcesPage() {
               <section>
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center"><span className="text-lg">📥</span></div>
-                  <h2 className="text-lg font-bold text-white">Indirilebilir Kaynaklar</h2>
+                  <h2 className="text-lg font-bold text-white">İndirilebilir Kaynaklar</h2>
                 </div>
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden">
                   <div className="hidden md:grid grid-cols-3 gap-4 px-5 py-3 bg-zinc-800/30 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
-                    <span>Kaynak Adi</span><span>Tur / Boyut</span><span className="text-right">Islem</span>
+                    <span>Kaynak Adı</span><span>Tür / Boyut</span><span className="text-right">İşlem</span>
                   </div>
                   {downloadableResources.map((res, i) => (
                     <div key={i} className={`flex flex-col md:grid md:grid-cols-3 gap-2 md:gap-4 px-5 py-4 md:items-center ${i < downloadableResources.length - 1 ? 'border-b border-zinc-800/60' : ''}`}>
@@ -61,7 +61,7 @@ export default function ResourcesPage() {
                         <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${res.type === 'PDF' ? 'bg-red-500/15 text-red-400' : 'bg-amber-500/15 text-amber-400'}`}>{res.type}</span>
                         <span className="text-zinc-600 text-xs">{res.size}</span>
                       </div>
-                      <div className="md:text-right"><button className="text-amber-500 hover:text-amber-400 text-sm font-medium transition-colors">Indir →</button></div>
+                      <div className="md:text-right"><button className="text-amber-500 hover:text-amber-400 text-sm font-medium transition-colors">İndir →</button></div>
                     </div>
                   ))}
                 </div>
@@ -114,7 +114,7 @@ export default function ResourcesPage() {
 
             <EditableSection sectionKey="resources_cta">
               <div className="bg-gradient-to-br from-amber-500/10 to-orange-600/5 border border-amber-500/15 rounded-2xl p-6 text-center">
-                <h3 className="text-base font-bold text-white mb-2">{ctaData?.title || 'Kampanyaya Katilin'}</h3>
+                <h3 className="text-base font-bold text-white mb-2">{ctaData?.title || 'Kampanyaya Katılın'}</h3>
                 <p className="text-zinc-500 text-xs mb-5 leading-relaxed">{ctaData?.description || ''}</p>
                 <Link href="/engel-bildir" className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-zinc-950 font-semibold px-5 py-2.5 rounded-xl text-sm transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/35">
                   Hemen Engel Bildir
