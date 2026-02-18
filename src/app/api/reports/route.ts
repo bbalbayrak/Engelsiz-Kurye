@@ -4,32 +4,56 @@ import { getSessionFromCookie } from '@/lib/auth';
 import { v4 as uuid } from 'uuid';
 
 // Geocode using OpenStreetMap Nominatim (free, no API key)
-async function geocode(siteName: string, address: string, district: string, city: string): Promise<[number, number] | null> {
-  const queries = [
-    address ? `${address}, ${district}, ${city}, Turkey` : null,
-    `${siteName}, ${district}, ${city}, Turkey`,
-    `${district}, ${city}, Turkey`,
-  ].filter(Boolean) as string[];
-
-  for (const q of queries) {
-    try {
-      const url = `https://nominatim.openstreetmap.org/search?${new URLSearchParams({
-        q, format: 'json', limit: '1', countrycodes: 'tr',
-      })}`;
-      const res = await fetch(url, {
-        headers: { 'User-Agent': 'EngelsizTeslimat/1.0' },
-        signal: AbortSignal.timeout(5000),
-      });
-      if (!res.ok) continue;
-      const results = await res.json();
-      if (results.length > 0) {
-        const lat = parseFloat(results[0].lat);
-        const lon = parseFloat(results[0].lon);
-        if (!isNaN(lat) && !isNaN(lon)) return [lat, lon];
-      }
-    } catch { continue; }
-  }
+async function nominatimFetch(params: Record<string, string>): Promise<[number, number] | null> {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?${new URLSearchParams({ format: 'json', limit: '1', countrycodes: 'tr', ...params })}`;
+    const res = await fetch(url, { headers: { 'User-Agent': 'EngelsizTeslimat/1.0' }, signal: AbortSignal.timeout(5000) });
+    if (!res.ok) return null;
+    const results = await res.json();
+    if (results.length > 0) {
+      const lat = parseFloat(results[0].lat);
+      const lon = parseFloat(results[0].lon);
+      if (!isNaN(lat) && !isNaN(lon)) return [lat, lon];
+    }
+  } catch { /* continue */ }
   return null;
+}
+
+async function geocode(
+  siteName: string,
+  buildingNo: string,
+  street: string,
+  neighborhood: string,
+  district: string,
+  city: string,
+): Promise<[number, number] | null> {
+  const streetPart = [buildingNo, street].filter(Boolean).join(' ');
+
+  // Strategy 1: Nominatim structured query — most precise
+  if (streetPart) {
+    const result = await nominatimFetch({ street: streetPart, city, county: district });
+    if (result) return result;
+  }
+
+  // Strategy 2: Free-text with all available address parts
+  const parts = [
+    streetPart,
+    neighborhood ? `${neighborhood} Mahallesi` : '',
+    district,
+    city,
+    'Turkey',
+  ].filter(Boolean);
+  if (parts.length > 3) {
+    const result = await nominatimFetch({ q: parts.join(', ') });
+    if (result) return result;
+  }
+
+  // Strategy 3: Site name + district + city
+  const result3 = await nominatimFetch({ q: `${siteName}, ${district}, ${city}, Turkey` });
+  if (result3) return result3;
+
+  // Strategy 4: District + city (coarse fallback)
+  return nominatimFetch({ q: `${district}, ${city}, Turkey` });
 }
 
 // GET — all reports
@@ -64,7 +88,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { siteName, address, city, district, obstacleType, obstacleTypes, description, captchaAnswer, captchaExpected } = body;
+    const { siteName, neighborhood, street, buildingNo, address, city, district, obstacleType, obstacleTypes, description, captchaAnswer, captchaExpected } = body;
     const resolvedType: string = Array.isArray(obstacleTypes) && obstacleTypes.length > 0
       ? obstacleTypes.join(',')
       : (obstacleType || '');
@@ -76,8 +100,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Güvenlik sorusu yanlış.' }, { status: 400 });
     }
 
+    // Build combined address string for storage
+    const streetPart = [buildingNo, street].filter(Boolean).join(' ');
+    const storedAddress = [streetPart, neighborhood ? `${neighborhood} Mah.` : ''].filter(Boolean).join(', ')
+      || address || '';
+
     const user = await getSessionFromCookie();
-    const coords = await geocode(siteName, address || '', district, city);
+    const coords = await geocode(siteName, buildingNo || '', street || '', neighborhood || '', district, city);
     const lat = coords ? coords[0] : 39 + Math.random() * 3;
     const lng = coords ? coords[1] : 28 + Math.random() * 8;
 
@@ -87,7 +116,7 @@ export async function POST(request: NextRequest) {
     await db.execute({
       sql: `INSERT INTO reports (id, user_id, user_email, site_name, address, city, district, latitude, longitude, obstacle_type, description, verified, report_count)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1)`,
-      args: [id, user?.id || null, user?.email || null, siteName.trim(), (address || '').trim(), city, district, lat, lng, resolvedType, (description || '').trim()],
+      args: [id, user?.id || null, user?.email || null, siteName.trim(), storedAddress.trim(), city, district, lat, lng, resolvedType, (description || '').trim()],
     });
 
     return NextResponse.json({

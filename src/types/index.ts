@@ -83,7 +83,9 @@ export interface CampaignMaterial {
 
 export interface ReportFormData {
   siteName: string;
-  address: string;
+  neighborhood: string;
+  street: string;
+  buildingNo: string;
   city: string;
   district: string;
   obstacleTypes: ObstacleType[];

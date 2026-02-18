@@ -12,7 +12,8 @@ const inputClass = 'w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py
 export default function ReportForm() {
   const { user } = useAuth();
   const [form, setForm] = useState({
-    siteName: '', address: '', city: '', district: '',
+    siteName: '', neighborhood: '', street: '', buildingNo: '',
+    city: '', district: '',
     obstacleTypes: [] as ObstacleType[],
     description: '', captchaAnswer: '',
   });
@@ -59,7 +60,9 @@ export default function ReportForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           siteName: form.siteName,
-          address: form.address,
+          neighborhood: form.neighborhood,
+          street: form.street,
+          buildingNo: form.buildingNo,
           city: form.city,
           district: form.district,
           obstacleTypes: form.obstacleTypes,
@@ -94,7 +97,7 @@ export default function ReportForm() {
         <button
           onClick={() => {
             setState('idle');
-            setForm({ siteName: '', address: '', city: '', district: '', obstacleTypes: [], description: '', captchaAnswer: '' });
+            setForm({ siteName: '', neighborhood: '', street: '', buildingNo: '', city: '', district: '', obstacleTypes: [], description: '', captchaAnswer: '' });
             refreshCaptcha();
           }}
           className="bg-gradient-to-r from-amber-500 to-orange-500 text-zinc-950 font-semibold px-6 py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-amber-500/25"
@@ -134,7 +137,7 @@ export default function ReportForm() {
         </div>
       )}
 
-      {/* Site Name + Address */}
+      {/* Site Name + Neighborhood */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Mekan / Site Adı *</label>
@@ -142,9 +145,23 @@ export default function ReportForm() {
             placeholder="Ör: Greenwood Apartments" className={inputClass} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Adres</label>
-          <input type="text" value={form.address} onChange={e => update('address', e.target.value)}
-            placeholder="Cadde, Sokak, No..." className={inputClass} />
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Mahalle</label>
+          <input type="text" value={form.neighborhood} onChange={e => update('neighborhood', e.target.value)}
+            placeholder="Ör: Atatürk Mahallesi" className={inputClass} />
+        </div>
+      </div>
+
+      {/* Street + Building No */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Cadde / Sokak</label>
+          <input type="text" value={form.street} onChange={e => update('street', e.target.value)}
+            placeholder="Ör: Bağdat Caddesi" className={inputClass} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Bina No</label>
+          <input type="text" value={form.buildingNo} onChange={e => update('buildingNo', e.target.value)}
+            placeholder="Ör: 42" className={inputClass} />
         </div>
       </div>
 
