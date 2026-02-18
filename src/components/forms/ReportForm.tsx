@@ -13,7 +13,8 @@ export default function ReportForm() {
   const { user } = useAuth();
   const [form, setForm] = useState({
     siteName: '', address: '', city: '', district: '',
-    obstacleType: '' as ObstacleType | '', description: '', captchaAnswer: '',
+    obstacleTypes: [] as ObstacleType[],
+    description: '', captchaAnswer: '',
   });
   const [captcha, setCaptcha] = useState({ question: '', answer: 0 });
   const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -25,9 +26,23 @@ export default function ReportForm() {
   const availableDistricts = form.city ? districts[form.city] || [] : [];
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
+  const toggleObstacleType = (type: ObstacleType) => {
+    setForm(prev => ({
+      ...prev,
+      obstacleTypes: prev.obstacleTypes.includes(type)
+        ? prev.obstacleTypes.filter(t => t !== type)
+        : [...prev.obstacleTypes, type],
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
+
+    if (form.obstacleTypes.length === 0) {
+      setErrorMsg('En az bir engel türü seçin.');
+      return;
+    }
 
     if (parseInt(form.captchaAnswer) !== captcha.answer) {
       setErrorMsg('Güvenlik sorusu yanlış. Lütfen tekrar deneyin.');
@@ -43,7 +58,12 @@ export default function ReportForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...form,
+          siteName: form.siteName,
+          address: form.address,
+          city: form.city,
+          district: form.district,
+          obstacleTypes: form.obstacleTypes,
+          description: form.description,
           captchaAnswer: parseInt(form.captchaAnswer),
           captchaExpected: captcha.answer,
         }),
@@ -74,7 +94,7 @@ export default function ReportForm() {
         <button
           onClick={() => {
             setState('idle');
-            setForm({ siteName: '', address: '', city: '', district: '', obstacleType: '', description: '', captchaAnswer: '' });
+            setForm({ siteName: '', address: '', city: '', district: '', obstacleTypes: [], description: '', captchaAnswer: '' });
             refreshCaptcha();
           }}
           className="bg-gradient-to-r from-amber-500 to-orange-500 text-zinc-950 font-semibold px-6 py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-amber-500/25"
@@ -148,12 +168,13 @@ export default function ReportForm() {
         </div>
       </div>
 
-      {/* Obstacle Type */}
+      {/* Obstacle Types (multi-select) */}
       <div>
-        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Engel Türü *</label>
+        <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1">Engel Türü *</label>
+        <p className="text-[11px] text-zinc-600 mb-3">Birden fazla seçebilirsiniz.</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           {(Object.entries(OBSTACLE_CONFIG) as [ObstacleType, typeof OBSTACLE_CONFIG[ObstacleType]][]).map(([type, cfg]) => {
-            const selected = form.obstacleType === type;
+            const selected = form.obstacleTypes.includes(type);
             return (
               <label
                 key={type}
@@ -163,8 +184,12 @@ export default function ReportForm() {
                     : 'border-zinc-800 hover:border-zinc-700 bg-zinc-900/50'
                 }`}
               >
-                <input type="radio" name="obstacleType" value={type} checked={selected}
-                  onChange={() => update('obstacleType', type)} className="sr-only" required />
+                <input
+                  type="checkbox"
+                  checked={selected}
+                  onChange={() => toggleObstacleType(type)}
+                  className="sr-only"
+                />
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 transition-all ${
                   selected ? 'bg-amber-500/20' : 'bg-zinc-800'
                 }`}>
@@ -176,7 +201,7 @@ export default function ReportForm() {
                 </div>
                 {selected && (
                   <div className="ml-auto shrink-0">
-                    <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center">
+                    <div className="w-5 h-5 rounded bg-amber-500 flex items-center justify-center">
                       <svg className="w-3 h-3 text-zinc-950" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>

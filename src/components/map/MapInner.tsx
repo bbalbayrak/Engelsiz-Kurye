@@ -8,9 +8,22 @@ import { OBSTACLE_CONFIG, type ObstacleReport, type ObstacleType } from '@/types
 import { formatRelativeDate } from '@/lib/utils';
 import { useEffect } from 'react';
 
+// Parse comma-separated obstacle type string
+function parsePrimaryType(typeStr: string) {
+  const key = typeStr.split(',')[0].trim() as ObstacleType;
+  return OBSTACLE_CONFIG[key] || OBSTACLE_CONFIG.other;
+}
+
+function parseAllTypes(typeStr: string) {
+  return typeStr.split(',').map(t => {
+    const key = t.trim() as ObstacleType;
+    return OBSTACLE_CONFIG[key];
+  }).filter(Boolean);
+}
+
 // ── Pin icon per obstacle type ──
-function createPinIcon(type: ObstacleType) {
-  const cfg = OBSTACLE_CONFIG[type] || OBSTACLE_CONFIG.other;
+function createPinIcon(typeStr: string) {
+  const cfg = parsePrimaryType(typeStr);
   return L.divIcon({
     html: `
       <div style="position:relative;width:36px;height:36px;">
@@ -94,7 +107,9 @@ function LocateControl() {
 
 // ── Popup Content ──
 function PopupContent({ report }: { report: ObstacleReport }) {
-  const cfg = OBSTACLE_CONFIG[report.obstacleType];
+  const types = parseAllTypes(report.obstacleType);
+  const primaryCfg = parsePrimaryType(report.obstacleType);
+
   return (
     <div style={{ width: 'min(280px, calc(100vw - 60px))', padding: '14px', fontFamily: "'Inter',system-ui,sans-serif" }}>
       {/* Header */}
@@ -106,23 +121,42 @@ function PopupContent({ report }: { report: ObstacleReport }) {
             {report.district}, {report.city}
           </div>
         </div>
-        {report.verified && (
+        {report.verified ? (
           <span style={{
             fontSize: 10, fontWeight: 600, color: '#4ade80',
             background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.25)',
             borderRadius: 99, padding: '2px 8px', whiteSpace: 'nowrap',
           }}>Doğrulanmış</span>
+        ) : (
+          <span style={{
+            fontSize: 10, fontWeight: 600, color: '#f59e0b',
+            background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.25)',
+            borderRadius: 99, padding: '2px 8px', whiteSpace: 'nowrap',
+          }}>Beklemede</span>
         )}
       </div>
 
-      {/* Obstacle type badge */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        background: `${cfg.color}18`, border: `1px solid ${cfg.color}40`,
-        borderRadius: 10, padding: '8px 12px', marginBottom: 10,
-      }}>
-        <span style={{ fontSize: 18 }}>{cfg.icon}</span>
-        <span style={{ fontSize: 13, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
+      {/* Obstacle type badges */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+        {types.length > 0 ? types.map((cfg, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: `${cfg.color}18`, border: `1px solid ${cfg.color}40`,
+            borderRadius: 10, padding: '6px 10px',
+          }}>
+            <span style={{ fontSize: 16 }}>{cfg.icon}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
+          </div>
+        )) : (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: `${primaryCfg.color}18`, border: `1px solid ${primaryCfg.color}40`,
+            borderRadius: 10, padding: '8px 12px',
+          }}>
+            <span style={{ fontSize: 18 }}>{primaryCfg.icon}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: primaryCfg.color }}>{primaryCfg.label}</span>
+          </div>
+        )}
       </div>
 
       {/* Description */}

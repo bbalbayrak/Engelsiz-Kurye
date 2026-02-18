@@ -28,7 +28,6 @@ export default function Footer() {
               {[
                 { href: '/', label: 'Engel Haritası' },
                 { href: '/engel-bildir', label: 'Engel Bildir' },
-                { href: '/hukuki-rehber', label: 'Hukuki Rehber' },
               ].map(l => (
                 <Link key={l.href} href={l.href} className="text-zinc-500 hover:text-amber-500 text-sm transition-colors">{l.label}</Link>
               ))}
@@ -48,14 +47,13 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Legal */}
+          {/* İletişim */}
           <div>
-            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">Yasal</h4>
-            <nav className="flex flex-col gap-2.5">
-              <span className="text-zinc-500 text-sm">Kullanım Şartları</span>
-              <span className="text-zinc-500 text-sm">Gizlilik Politikası</span>
-              <span className="text-zinc-500 text-sm">Yönetim</span>
-            </nav>
+            <h4 className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-4">İletişim</h4>
+            <div className="flex flex-col gap-2.5">
+              <span className="text-zinc-500 text-sm">iletisim@engelsiz-teslimat.com</span>
+              <span className="text-zinc-500 text-sm">+90 212 000 00 00</span>
+            </div>
           </div>
         </div>
 

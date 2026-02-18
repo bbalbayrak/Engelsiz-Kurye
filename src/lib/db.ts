@@ -22,6 +22,7 @@ export async function getDb(): Promise<Client> {
     await initTables(client);
     await seedAdmin(client);
     await seedSections(client);
+    await migrateData(client);
   }
   return client;
 }
@@ -136,10 +137,10 @@ async function seedSections(client: Client) {
         badge: "Manifesto",
         title: "Biz Şehri Taşıyoruz.",
         highlight: "Yolumuzu Kesmeyin.",
-        paragraph1:
+        paragraphs: [
           "Her gün milyonlarca paketle şehirlerin can damarlarını oluşturuyoruz. Yağmurda, karda, sıcakta kapınıza kadar geliyoruz. Ama birçok site, AVM ve bina bize kapılarını kapatıyor.",
-        paragraph2:
           "Bizi arka kapılara, yük asansörlerine yönlendiriyorlar; hatta kaskımızı çıkarmamızı dayatıyorlar. Bu kampanya, kuryelerin karşılaştığı engelleri görünür kılmak, yasal haklar hakkında bilgilendirmek ve kamuoyunda farkındalık yaratmak için başlatılmıştır.",
+        ],
       }),
     ],
 
@@ -230,6 +231,18 @@ async function seedSections(client: Client) {
         title: "Kampanyaya Katılın",
         description:
           "Siz de karşılaştığınız engelleri bildirerek veya kampanya materyallerini paylaşarak bu harekete destek olabilirsiniz.",
+      }),
+    ],
+
+    [
+      "about_contact",
+      "hakkimizda",
+      "İletişim",
+      1,
+      JSON.stringify({
+        title: "İletişim",
+        email: "iletisim@engelsiz-teslimat.com",
+        phone: "+90 212 000 00 00",
       }),
     ],
 
@@ -358,4 +371,39 @@ async function seedSections(client: Client) {
     })),
     "write",
   );
+}
+
+async function migrateData(client: Client) {
+  // 1. Convert about_hero paragraph1/paragraph2/paragraph3 → paragraphs array
+  const heroRes = await client.execute({
+    sql: "SELECT content FROM site_sections WHERE key = 'about_hero'",
+    args: [],
+  });
+  if (heroRes.rows.length > 0) {
+    const content = JSON.parse(heroRes.rows[0].content as string) as Record<string, unknown>;
+    if (!content.paragraphs && (content.paragraph1 || content.paragraph2 || content.paragraph3)) {
+      const paragraphs = [content.paragraph1, content.paragraph2, content.paragraph3].filter(Boolean);
+      const { paragraph1: _1, paragraph2: _2, paragraph3: _3, ...rest } = content;
+      void _1; void _2; void _3;
+      await client.execute({
+        sql: "UPDATE site_sections SET content = ?, updated_at = datetime('now') WHERE key = 'about_hero'",
+        args: [JSON.stringify({ ...rest, paragraphs })],
+      });
+    }
+  }
+
+  // 2. Insert about_contact section if it doesn't exist
+  const contactRes = await client.execute({
+    sql: "SELECT key FROM site_sections WHERE key = 'about_contact'",
+    args: [],
+  });
+  if (contactRes.rows.length === 0) {
+    await client.execute({
+      sql: "INSERT INTO site_sections (key, page, label, visible, content) VALUES (?, ?, ?, ?, ?)",
+      args: [
+        "about_contact", "hakkimizda", "İletişim", 1,
+        JSON.stringify({ title: "İletişim", email: "iletisim@engelsiz-teslimat.com", phone: "+90 212 000 00 00" }),
+      ],
+    });
+  }
 }

@@ -6,7 +6,7 @@ import { getSessionFromCookie } from '@/lib/auth';
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
   const user = await getSessionFromCookie();
   if (!user || user.role !== 'admin') {
-    return NextResponse.json({ error: 'Yetkisiz erisim.' }, { status: 403 });
+    return NextResponse.json({ error: 'Yetkisiz erişim.' }, { status: 403 });
   }
 
   const { key } = await params;
@@ -15,7 +15,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
   const existing = await db.execute({ sql: 'SELECT key FROM site_sections WHERE key = ?', args: [key] });
   if (existing.rows.length === 0) {
-    return NextResponse.json({ error: 'Bolum bulunamadi.' }, { status: 404 });
+    return NextResponse.json({ error: 'Bölüm bulunamadı.' }, { status: 404 });
   }
 
   if (typeof body.visible === 'boolean') {

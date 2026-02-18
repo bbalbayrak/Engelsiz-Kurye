@@ -64,13 +64,16 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { siteName, address, city, district, obstacleType, description, captchaAnswer, captchaExpected } = body;
+    const { siteName, address, city, district, obstacleType, obstacleTypes, description, captchaAnswer, captchaExpected } = body;
+    const resolvedType: string = Array.isArray(obstacleTypes) && obstacleTypes.length > 0
+      ? obstacleTypes.join(',')
+      : (obstacleType || '');
 
-    if (!siteName || !city || !district || !obstacleType) {
-      return NextResponse.json({ success: false, error: 'Tum zorunlu alanlari doldurun.' }, { status: 400 });
+    if (!siteName || !city || !district || !resolvedType) {
+      return NextResponse.json({ success: false, error: 'Tüm zorunlu alanları doldurun.' }, { status: 400 });
     }
     if (captchaAnswer !== captchaExpected) {
-      return NextResponse.json({ success: false, error: 'Guvenlik sorusu yanlis.' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Güvenlik sorusu yanlış.' }, { status: 400 });
     }
 
     const user = await getSessionFromCookie();
@@ -84,7 +87,7 @@ export async function POST(request: NextRequest) {
     await db.execute({
       sql: `INSERT INTO reports (id, user_id, user_email, site_name, address, city, district, latitude, longitude, obstacle_type, description, verified, report_count)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1)`,
-      args: [id, user?.id || null, user?.email || null, siteName.trim(), (address || '').trim(), city, district, lat, lng, obstacleType, (description || '').trim()],
+      args: [id, user?.id || null, user?.email || null, siteName.trim(), (address || '').trim(), city, district, lat, lng, resolvedType, (description || '').trim()],
     });
 
     return NextResponse.json({
@@ -95,6 +98,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error('Report creation error:', err);
-    return NextResponse.json({ success: false, error: 'Sunucu hatasi.' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Sunucu hatası.' }, { status: 500 });
   }
 }

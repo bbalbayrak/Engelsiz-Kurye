@@ -6,7 +6,7 @@ import { getSessionFromCookie } from '@/lib/auth';
 export async function GET() {
   const user = await getSessionFromCookie();
   if (!user || user.role !== 'admin') {
-    return NextResponse.json({ error: 'Yetkisiz erisim.' }, { status: 403 });
+    return NextResponse.json({ error: 'Yetkisiz erişim.' }, { status: 403 });
   }
 
   const db = await getDb();

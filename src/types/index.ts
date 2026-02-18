@@ -6,7 +6,7 @@ export interface ObstacleReport {
   district: string;
   latitude: number;
   longitude: number;
-  obstacleType: ObstacleType;
+  obstacleType: string; // comma-separated ObstacleType values
   description?: string;
   reportedAt: string;
   verified: boolean;
@@ -86,6 +86,6 @@ export interface ReportFormData {
   address: string;
   city: string;
   district: string;
-  obstacleType: ObstacleType | '';
+  obstacleTypes: ObstacleType[];
   description: string;
 }

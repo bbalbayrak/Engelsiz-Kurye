@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 
@@ -13,10 +13,9 @@ export default function LoginPage() {
   const router = useRouter();
 
   // If already logged in, redirect
-  if (user) {
-    router.push('/');
-    return null;
-  }
+  useEffect(() => {
+    if (user) router.push('/');
+  }, [user, router]);
 
   const update = (field: string, value: string) => setForm(prev => ({ ...prev, [field]: value }));
 
