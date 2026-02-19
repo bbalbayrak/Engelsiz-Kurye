@@ -180,11 +180,13 @@ function FieldEditor({ fieldKey, value, onChange }: {
   return null;
 }
 
-function ReportRow({ report, onApprove, onRevoke, isLoading, approved = false }: {
+function ReportRow({ report, onApprove, onRevoke, onDelete, actionLoading, deleteLoading, approved = false }: {
   report: Report;
   onApprove?: () => void;
   onRevoke?: () => void;
-  isLoading: boolean;
+  onDelete?: () => void;
+  actionLoading: boolean;
+  deleteLoading: boolean;
   approved?: boolean;
 }) {
   const types = report.obstacleType.split(',').map(t => OBSTACLE_CONFIG[t.trim() as ObstacleType]).filter(Boolean);
@@ -212,25 +214,45 @@ function ReportRow({ report, onApprove, onRevoke, isLoading, approved = false }:
             {report.userEmail || 'Anonim'} · {new Date(report.reportedAt).toLocaleDateString('tr-TR')}
           </p>
         </div>
-        <div className="shrink-0 self-center sm:self-start">
+        <div className="shrink-0 self-center sm:self-start flex gap-2">
           {approved ? (
-            <button
-              onClick={onRevoke}
-              disabled={isLoading}
-              className="px-3 py-1.5 text-xs font-medium text-zinc-400 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
-            >
-              {isLoading && <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />}
-              Onayı Kaldır
-            </button>
+            <>
+              <button
+                onClick={onRevoke}
+                disabled={actionLoading || deleteLoading}
+                className="px-3 py-1.5 text-xs font-medium text-zinc-400 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {actionLoading && <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+                Onayı Kaldır
+              </button>
+              <button
+                onClick={onDelete}
+                disabled={actionLoading || deleteLoading}
+                className="px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {deleteLoading && <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+                Sil
+              </button>
+            </>
           ) : (
-            <button
-              onClick={onApprove}
-              disabled={isLoading}
-              className="px-3 py-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
-            >
-              {isLoading && <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />}
-              Onayla
-            </button>
+            <>
+              <button
+                onClick={onApprove}
+                disabled={actionLoading || deleteLoading}
+                className="px-3 py-1.5 text-xs font-bold text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {actionLoading && <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+                Onayla
+              </button>
+              <button
+                onClick={onDelete}
+                disabled={actionLoading || deleteLoading}
+                className="px-3 py-1.5 text-xs font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-lg transition-all disabled:opacity-50 flex items-center gap-1.5"
+              >
+                {deleteLoading && <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />}
+                Reddet
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -255,6 +277,7 @@ export default function AdminPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [reportsLoading, setReportsLoading] = useState(false);
   const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchSections = useCallback(async () => {
     try {
@@ -329,6 +352,15 @@ export default function AdminPage() {
       await fetchReports();
     } catch { /**/ }
     setApprovingId(null);
+  };
+
+  const deleteReport = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await fetch(`/api/admin/reports/${id}`, { method: 'DELETE' });
+      await fetchReports();
+    } catch { /**/ }
+    setDeletingId(null);
   };
 
   if (authLoading || loading) {
@@ -488,7 +520,9 @@ export default function AdminPage() {
                           key={report.id}
                           report={report}
                           onApprove={() => approveReport(report.id, true)}
-                          isLoading={approvingId === report.id}
+                          onDelete={() => deleteReport(report.id)}
+                          actionLoading={approvingId === report.id}
+                          deleteLoading={deletingId === report.id}
                         />
                       ))}
                     </div>
@@ -507,7 +541,9 @@ export default function AdminPage() {
                           key={report.id}
                           report={report}
                           onRevoke={() => approveReport(report.id, false)}
-                          isLoading={approvingId === report.id}
+                          onDelete={() => deleteReport(report.id)}
+                          actionLoading={approvingId === report.id}
+                          deleteLoading={deletingId === report.id}
                           approved
                         />
                       ))}

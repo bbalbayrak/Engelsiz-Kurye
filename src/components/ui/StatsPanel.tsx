@@ -4,25 +4,24 @@ import { useState, useEffect } from 'react';
 import { OBSTACLE_CONFIG, type ObstacleType } from '@/types';
 
 export default function StatsPanel() {
-  const [stats, setStats] = useState({ total: 0, verified: 0, obstacleStats: {} as Record<string, number> });
+  const [stats, setStats] = useState({ total: 0, verified: 0, pending: 0, obstacleStats: {} as Record<string, number> });
 
   useEffect(() => {
     fetch('/api/reports')
       .then(res => res.json())
       .then(data => {
-        const reports = data.reports || [];
-        const total = reports.length;
-        const verified = reports.filter((r: { verified: boolean }) => r.verified).length;
+        const reports: { obstacleType: string }[] = data.reports || [];
+        const counts = data.counts ?? { total: reports.length, verified: reports.length, pending: 0 };
         const obstacleStats: Record<string, number> = {};
         for (const r of reports) {
           obstacleStats[r.obstacleType] = (obstacleStats[r.obstacleType] || 0) + 1;
         }
-        setStats({ total, verified, obstacleStats });
+        setStats({ total: counts.total, verified: counts.verified, pending: counts.pending, obstacleStats });
       })
       .catch(() => {});
   }, []);
 
-  const { total, verified, obstacleStats } = stats;
+  const { total, verified, pending, obstacleStats } = stats;
 
   return (
     <div className="bg-zinc-950/85 backdrop-blur-xl rounded-2xl border border-zinc-800/60 shadow-2xl shadow-black/40 w-72 overflow-hidden">
@@ -39,7 +38,7 @@ export default function StatsPanel() {
         {[
           { value: String(total), label: 'Bildirim' },
           { value: String(verified), label: 'Doğrulanan' },
-          { value: String(total - verified), label: 'Bekleyen' },
+          { value: String(pending), label: 'Bekleyen' },
         ].map((stat, i) => (
           <div key={i} className="text-center px-2">
             <div className="text-lg font-bold text-white leading-none">{stat.value}</div>

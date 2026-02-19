@@ -59,11 +59,28 @@ async function geocode(
 // GET — all reports
 export async function GET() {
   const db = await getDb();
+
+  // Verified reports only (for map pins)
   const res = await db.execute(
     `SELECT id, user_id, user_email, site_name, address, city, district,
             latitude, longitude, obstacle_type, description, reported_at, verified, report_count
-     FROM reports ORDER BY reported_at DESC`
+     FROM reports WHERE verified = 1 ORDER BY reported_at DESC`
   );
+
+  // Aggregate counts across all reports (for stats widget)
+  const countRes = await db.execute(
+    `SELECT
+       COUNT(*) AS total,
+       SUM(CASE WHEN verified = 1 THEN 1 ELSE 0 END) AS verified_count,
+       SUM(CASE WHEN verified = 0 THEN 1 ELSE 0 END) AS pending_count
+     FROM reports`
+  );
+  const row = countRes.rows[0];
+  const counts = {
+    total: Number(row.total ?? 0),
+    verified: Number(row.verified_count ?? 0),
+    pending: Number(row.pending_count ?? 0),
+  };
 
   const data = res.rows.map(r => ({
     id: r.id,
@@ -81,7 +98,7 @@ export async function GET() {
     anonymous: !r.user_id,
   }));
 
-  return NextResponse.json({ success: true, reports: data, total: data.length });
+  return NextResponse.json({ success: true, reports: data, total: data.length, counts });
 }
 
 // POST — create report
