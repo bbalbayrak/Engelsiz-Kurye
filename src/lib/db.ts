@@ -241,7 +241,7 @@ async function seedSections(client: Client) {
       1,
       JSON.stringify({
         title: "İletişim",
-        email: "iletisim@engelsiz-teslimat.com",
+        email: "info@engelsizkurye.com",
         phone: "+90 212 000 00 00",
       }),
     ],
@@ -380,11 +380,28 @@ async function migrateData(client: Client) {
     args: [],
   });
   if (heroRes.rows.length > 0) {
-    const content = JSON.parse(heroRes.rows[0].content as string) as Record<string, unknown>;
-    if (!content.paragraphs && (content.paragraph1 || content.paragraph2 || content.paragraph3)) {
-      const paragraphs = [content.paragraph1, content.paragraph2, content.paragraph3].filter(Boolean);
-      const { paragraph1: _1, paragraph2: _2, paragraph3: _3, ...rest } = content;
-      void _1; void _2; void _3;
+    const content = JSON.parse(heroRes.rows[0].content as string) as Record<
+      string,
+      unknown
+    >;
+    if (
+      !content.paragraphs &&
+      (content.paragraph1 || content.paragraph2 || content.paragraph3)
+    ) {
+      const paragraphs = [
+        content.paragraph1,
+        content.paragraph2,
+        content.paragraph3,
+      ].filter(Boolean);
+      const {
+        paragraph1: _1,
+        paragraph2: _2,
+        paragraph3: _3,
+        ...rest
+      } = content;
+      void _1;
+      void _2;
+      void _3;
       await client.execute({
         sql: "UPDATE site_sections SET content = ?, updated_at = datetime('now') WHERE key = 'about_hero'",
         args: [JSON.stringify({ ...rest, paragraphs })],
@@ -392,18 +409,98 @@ async function migrateData(client: Client) {
     }
   }
 
-  // 2. Insert about_contact section if it doesn't exist
+  // 2. Restore missing array content in about sections
+  const sectionsToCheck: Record<string, Record<string, unknown>> = {
+    about_hero: {
+      badge: "Manifesto",
+      title: "Biz Şehri Taşıyoruz.",
+      highlight: "Yolumuzu Kesmeyin.",
+      paragraphs: [
+        "Her gün milyonlarca paketle şehirlerin can damarlarını oluşturuyoruz. Yağmurda, karda, sıcakta kapınıza kadar geliyoruz. Ama birçok site, AVM ve bina bize kapılarını kapatıyor.",
+        "Bizi arka kapılara, yük asansörlerine yönlendiriyorlar; hatta kaskımızı çıkarmamızı dayatıyorlar. Bu kampanya, kuryelerin karşılaştığı engelleri görünür kılmak, yasal haklar hakkında bilgilendirmek ve kamuoyunda farkındalık yaratmak için başlatılmıştır.",
+      ],
+    },
+    about_pillars: {
+      title: "Temel İlkelerimiz",
+      subtitle: "Kuryelerin haklarını savunmak için üç temel ilke üzerine çalışıyoruz.",
+      items: [
+        { icon: "🚪", title: "Engelsiz Erişim", desc: "Kuryelerin, tüm bina ve sitelere eşit ve engelsiz erişim hakkı olduğunu savunuyoruz. Teslimat hizmeti, toplumun temel ihtiyaçlarından biridir.", color: "from-amber-500/20 to-amber-600/5" },
+        { icon: "⚖️", title: "Hukuki Koruma", desc: "Mevcut yasalar kuryeleri koruyor. Bu hakların bilinmesi ve gerektiğinde kullanılması için rehberlik sağlıyoruz.", color: "from-blue-500/20 to-blue-600/5" },
+        { icon: "📢", title: "Kamuoyu Farkındalığı", desc: "Yaşanan sorunları görünür kılarak toplumsal farkındalık oluşturuyoruz. Her bildirilen engel, değişim için bir adımdır.", color: "from-emerald-500/20 to-emerald-600/5" },
+      ],
+    },
+    about_timeline: {
+      title: "Yol Haritası",
+      events: [
+        { date: "2024 Q3", title: "Kampanya Başlangıcı", desc: "İlk araştırma ve veri toplama süreci." },
+        { date: "2024 Q4", title: "Platform Lansmanı", desc: "Engel haritası ve bildirim sistemi yayında." },
+        { date: "2025 Q1", title: "500+ Bildirim", desc: "Türkiye genelinde 500'den fazla engel bildirimi alındı." },
+        { date: "2025 Q2", title: "Hukuki Eylem", desc: "İlk toplu dilekçe ve yasal başvuru süreçleri." },
+      ],
+    },
+    about_video: {
+      title: "Hikayemizi İzleyin",
+      subtitle: "Kuryelerin günlük yaşadığı engelleri kendi gözlerinden dinleyin.",
+      videoTitle: "Bölüm 1: Teslimatın Engelleri",
+      videoDuration: "Süre: 04:32",
+    },
+    about_cta: {
+      title: "Kampanyaya Katılın",
+      description: "Siz de karşılaştığınız engelleri bildirerek veya kampanya materyallerini paylaşarak bu harekete destek olabilirsiniz.",
+    },
+  };
+
+  for (const [key, defaultContent] of Object.entries(sectionsToCheck)) {
+    const sectionRes = await client.execute({ sql: "SELECT content FROM site_sections WHERE key = ?", args: [key] });
+    if (sectionRes.rows.length > 0) {
+      const existing = JSON.parse(sectionRes.rows[0].content as string) as Record<string, unknown>;
+      let needsUpdate = false;
+      // Check if arrays are missing or empty
+      if (key === 'about_hero' && (!Array.isArray(existing.paragraphs) || (existing.paragraphs as unknown[]).length === 0)) needsUpdate = true;
+      if (key === 'about_pillars' && (!Array.isArray(existing.items) || (existing.items as unknown[]).length === 0)) needsUpdate = true;
+      if (key === 'about_timeline' && (!Array.isArray(existing.events) || (existing.events as unknown[]).length === 0)) needsUpdate = true;
+      // For non-array sections, check if core fields are missing
+      if (key === 'about_video' && !existing.title) needsUpdate = true;
+      if (key === 'about_cta' && !existing.title) needsUpdate = true;
+
+      if (needsUpdate) {
+        await client.execute({
+          sql: "UPDATE site_sections SET content = ?, updated_at = datetime('now') WHERE key = ?",
+          args: [JSON.stringify(defaultContent), key],
+        });
+      }
+    }
+  }
+
+  // 3. Insert about_contact section if it doesn't exist
   const contactRes = await client.execute({
-    sql: "SELECT key FROM site_sections WHERE key = 'about_contact'",
+    sql: "SELECT key, content FROM site_sections WHERE key = 'about_contact'",
     args: [],
   });
   if (contactRes.rows.length === 0) {
     await client.execute({
       sql: "INSERT INTO site_sections (key, page, label, visible, content) VALUES (?, ?, ?, ?, ?)",
       args: [
-        "about_contact", "hakkimizda", "İletişim", 1,
-        JSON.stringify({ title: "İletişim", email: "iletisim@engelsiz-teslimat.com", phone: "+90 212 000 00 00" }),
+        "about_contact",
+        "hakkimizda",
+        "İletişim",
+        1,
+        JSON.stringify({
+          title: "İletişim",
+          email: "info@engelsizkurye.com",
+          phone: "+90 212 000 00 00",
+        }),
       ],
     });
+  } else {
+    // 3. Migrate old email to new one
+    const contactContent = JSON.parse(contactRes.rows[0].content as string) as Record<string, unknown>;
+    if (contactContent.email === 'iletisim@engelsiz-teslimat.com') {
+      contactContent.email = 'info@engelsizkurye.com';
+      await client.execute({
+        sql: "UPDATE site_sections SET content = ?, updated_at = datetime('now') WHERE key = 'about_contact'",
+        args: [JSON.stringify(contactContent)],
+      });
+    }
   }
 }

@@ -41,15 +41,11 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-shadow">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-          </div>
+        <Link href="/" className="flex items-center gap-0 group">
+          <img src="/EngelsizKuryeLogoNew.png" alt="Engelsiz Kurye" className="h-20 w-auto -mr-1" />
           <div className="flex flex-col leading-none">
             <span className="font-bold text-[15px] text-white tracking-tight">Engelsiz</span>
-            <span className="font-bold text-[15px] text-amber-500 tracking-tight">Teslimat</span>
+            <span className="font-bold text-[15px] text-amber-500 tracking-tight">Kurye</span>
           </div>
         </Link>
 

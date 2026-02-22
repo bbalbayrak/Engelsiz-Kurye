@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   description:
     'Kuryelerin karşılaştığı site ve konum kısıtlamalarını haritada raporlayın, hukuki rehberlere erişin ve farkındalık kampanyasına katılın.',
   keywords: ['kurye hakları', 'engelsiz teslimat', 'site girişi', 'teslimat engeli'],
+  icons: {
+    icon: '/EngelsizKuryeLogoNew.png',
+  },
   openGraph: {
     title: 'Engelsiz Teslimat',
     description: 'Biz Şehri Taşıyoruz. Yolumuzu Kesmeyin.',

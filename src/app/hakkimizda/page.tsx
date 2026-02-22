@@ -132,7 +132,7 @@ export default function AboutPage() {
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">E-posta</p>
-                <p className="text-zinc-300 text-sm break-all">{contactData?.email || 'iletisim@engelsiz-teslimat.com'}</p>
+                <p className="text-zinc-300 text-sm break-all">{contactData?.email || 'info@engelsizkurye.com'}</p>
               </div>
               <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-6 hover:border-zinc-700 transition-colors">
                 <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
