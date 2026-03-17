@@ -15,6 +15,7 @@ export interface ObstacleReport {
 
 export type ObstacleType =
   | 'entry_denied'
+  | 'motorcycle_no_entry'
   | 'freight_elevator_only'
   | 'helmet_removal'
   | 'service_door_only'
@@ -30,6 +31,12 @@ export const OBSTACLE_CONFIG: Record<
     description: 'Site, apartman veya iş yerine giriş izni verilmiyor.',
     color: '#ef4444',
     icon: '🚫',
+  },
+  motorcycle_no_entry: {
+    label: 'Motosiklet girişi yasak',
+    description: 'Motosikletli kuryelerin site veya binaya girişine izin verilmiyor.',
+    color: '#f97316',
+    icon: '🏍️',
   },
   freight_elevator_only: {
     label: 'Sadece yük asansörü kullanımı',
@@ -90,4 +97,6 @@ export interface ReportFormData {
   district: string;
   obstacleTypes: ObstacleType[];
   description: string;
+  latitude: number | null;
+  longitude: number | null;
 }

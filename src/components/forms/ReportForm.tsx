@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { cities, districts } from '@/lib/data';
 import { OBSTACLE_CONFIG, type ObstacleType } from '@/types';
 import { generateCaptcha } from '@/lib/utils';
 import { useAuth } from '@/components/providers/AuthProvider';
+
+const MapPicker = dynamic(() => import('@/components/map/MapPicker'), { ssr: false, loading: () => <div className="h-[350px] rounded-2xl bg-zinc-900 border border-zinc-800 animate-pulse" /> });
 
 const inputClass = 'w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all text-sm';
 
@@ -16,10 +19,13 @@ export default function ReportForm() {
     city: '', district: '',
     obstacleTypes: [] as ObstacleType[],
     description: '', captchaAnswer: '',
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
   const [captcha, setCaptcha] = useState({ question: '', answer: 0 });
   const [state, setState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [geocoding, setGeocoding] = useState(false);
 
   const refreshCaptcha = useCallback(() => setCaptcha(generateCaptcha()), []);
   useEffect(() => { refreshCaptcha(); }, [refreshCaptcha]);
@@ -36,12 +42,54 @@ export default function ReportForm() {
     }));
   };
 
+  const handleMapChange = (lat: number, lng: number) => {
+    setForm(prev => ({ ...prev, latitude: lat, longitude: lng }));
+  };
+
+  const handleGeocode = async () => {
+    if (!form.city || !form.district) {
+      setErrorMsg('Otomatik konum bulmak için en az İl ve İlçe seçin.');
+      return;
+    }
+    setGeocoding(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/geocode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          siteName: form.siteName,
+          neighborhood: form.neighborhood,
+          street: form.street,
+          buildingNo: form.buildingNo,
+          city: form.city,
+          district: form.district,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.latitude && data.longitude) {
+        setForm(prev => ({ ...prev, latitude: data.latitude, longitude: data.longitude }));
+      } else {
+        setErrorMsg('Adres bulunamadı. Lütfen haritaya tıklayarak konumu manuel seçin.');
+      }
+    } catch {
+      setErrorMsg('Konum aranırken bir hata oluştu. Haritadan manuel seçim yapabilirsiniz.');
+    } finally {
+      setGeocoding(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
     if (form.obstacleTypes.length === 0) {
       setErrorMsg('En az bir engel türü seçin.');
+      return;
+    }
+
+    if (form.latitude === null || form.longitude === null) {
+      setErrorMsg('Lütfen haritadan konum seçin veya "Konumu Bul" butonunu kullanın.');
       return;
     }
 
@@ -67,6 +115,8 @@ export default function ReportForm() {
           district: form.district,
           obstacleTypes: form.obstacleTypes,
           description: form.description,
+          latitude: form.latitude,
+          longitude: form.longitude,
           captchaAnswer: parseInt(form.captchaAnswer),
           captchaExpected: captcha.answer,
         }),
@@ -97,7 +147,7 @@ export default function ReportForm() {
         <button
           onClick={() => {
             setState('idle');
-            setForm({ siteName: '', neighborhood: '', street: '', buildingNo: '', city: '', district: '', obstacleTypes: [], description: '', captchaAnswer: '' });
+            setForm({ siteName: '', neighborhood: '', street: '', buildingNo: '', city: '', district: '', obstacleTypes: [], description: '', captchaAnswer: '', latitude: null, longitude: null });
             refreshCaptcha();
           }}
           className="bg-gradient-to-r from-amber-500 to-orange-500 text-zinc-950 font-semibold px-6 py-3 rounded-xl transition-all hover:shadow-lg hover:shadow-amber-500/25"
@@ -183,6 +233,34 @@ export default function ReportForm() {
             {availableDistricts.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
+      </div>
+
+      {/* Map Picker */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider">Konum *</label>
+          <button
+            type="button"
+            onClick={handleGeocode}
+            disabled={geocoding || !form.city || !form.district}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-500 hover:text-amber-400 disabled:text-zinc-600 disabled:cursor-not-allowed transition-colors"
+          >
+            {geocoding ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                Aranıyor...
+              </>
+            ) : (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Adresten Konumu Bul
+              </>
+            )}
+          </button>
+        </div>
+        <MapPicker latitude={form.latitude} longitude={form.longitude} onChange={handleMapChange} />
       </div>
 
       {/* Obstacle Types (multi-select) */}

@@ -105,7 +105,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { siteName, neighborhood, street, buildingNo, address, city, district, obstacleType, obstacleTypes, description, captchaAnswer, captchaExpected } = body;
+    const { siteName, neighborhood, street, buildingNo, address, city, district, obstacleType, obstacleTypes, description, latitude, longitude, captchaAnswer, captchaExpected } = body;
     const resolvedType: string = Array.isArray(obstacleTypes) && obstacleTypes.length > 0
       ? obstacleTypes.join(',')
       : (obstacleType || '');
@@ -123,9 +123,18 @@ export async function POST(request: NextRequest) {
       || address || '';
 
     const user = await getSessionFromCookie();
-    const coords = await geocode(siteName, buildingNo || '', street || '', neighborhood || '', district, city);
-    const lat = coords ? coords[0] : 39 + Math.random() * 3;
-    const lng = coords ? coords[1] : 28 + Math.random() * 8;
+
+    // Use user-provided coordinates if available, otherwise geocode
+    let lat: number;
+    let lng: number;
+    if (typeof latitude === 'number' && typeof longitude === 'number') {
+      lat = latitude;
+      lng = longitude;
+    } else {
+      const coords = await geocode(siteName, buildingNo || '', street || '', neighborhood || '', district, city);
+      lat = coords ? coords[0] : 39 + Math.random() * 3;
+      lng = coords ? coords[1] : 28 + Math.random() * 8;
+    }
 
     const id = uuid();
     const db = await getDb();
