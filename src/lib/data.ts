@@ -171,19 +171,49 @@ export const campaignMaterials: CampaignMaterial[] = [
   { title: 'WhatsApp Sticker Pack', category: 'Sticker', color: 'from-green-600 to-emerald-700' },
 ];
 
-export const cities = [
-  'İstanbul', 'Ankara', 'İzmir', 'Bursa', 'Antalya', 'Adana', 'Konya',
-  'Gaziantep', 'Mersin', 'Kayseri', 'Eskişehir', 'Trabzon', 'Samsun',
-  'Denizli', 'Sakarya', 'Diyarbakır', 'Malatya',
-];
+import cityJson from './city.json';
+import districtJson from './district.json';
 
-export const districts: Record<string, string[]> = {
-  'İstanbul': ['Kadıköy', 'Ataşehir', 'Üsküdar', 'Beşiktaş', 'Şişli', 'Bakırköy', 'Sarıyer', 'Başakşehir', 'Maltepe', 'Kartal', 'Beylikdüzü', 'Esenyurt', 'Pendik', 'Fatih', 'Beyoğlu'],
-  'Ankara': ['Çankaya', 'Keçiören', 'Mamak', 'Yenimahalle', 'Etimesgut', 'Sincan', 'Altındağ', 'Pursaklar'],
-  'İzmir': ['Konak', 'Karşıyaka', 'Bornova', 'Bayraklı', 'Buca', 'Çiğli', 'Gaziemir', 'Balçova'],
-  'Bursa': ['Osmangazi', 'Nilüfer', 'Yıldırım', 'Mudanya', 'Gürsu'],
-  'Antalya': ['Muratpaşa', 'Konyaaltı', 'Kepez', 'Alanya', 'Manavgat'],
-  'Adana': ['Seyhan', 'Çukurova', 'Yüreğir', 'Sarıçam'],
-  'Konya': ['Selçuklu', 'Meram', 'Karatay'],
-  'Gaziantep': ['Şahinbey', 'Şehitkamil'],
-};
+// Turkish title case helper
+function toTurkishTitleCase(str: string): string {
+  return str
+    .toLocaleLowerCase('tr-TR')
+    .split(' ')
+    .map(word => {
+      if (word.length === 0) return word;
+      // Handle Turkish İ/I correctly
+      const first = word.charAt(0).toLocaleUpperCase('tr-TR');
+      return first + word.slice(1);
+    })
+    .join(' ');
+}
+
+// Parse city data: filter out Cyprus, sort alphabetically
+const cityTable = (cityJson as { type: string; data?: { id: string; name: string }[] }[])
+  .find(t => t.type === 'table');
+const rawCities = (cityTable?.data || [])
+  .filter(c => !c.name.includes('KIBRIS'));
+
+const cityMap = new Map<string, string>(); // id → formatted name
+rawCities.forEach(c => cityMap.set(c.id, toTurkishTitleCase(c.name)));
+
+export const cities: string[] = Array.from(cityMap.values()).sort((a, b) => a.localeCompare(b, 'tr'));
+
+// Parse district data: group by city, sort alphabetically
+const districtTable = (districtJson as { type: string; data?: { id: string; il_id: string; name: string }[] }[])
+  .find(t => t.type === 'table');
+const rawDistricts = districtTable?.data || [];
+
+const districtsByCity: Record<string, string[]> = {};
+for (const d of rawDistricts) {
+  const cityName = cityMap.get(d.il_id);
+  if (!cityName) continue;
+  if (!districtsByCity[cityName]) districtsByCity[cityName] = [];
+  districtsByCity[cityName].push(toTurkishTitleCase(d.name));
+}
+// Sort districts within each city
+for (const key of Object.keys(districtsByCity)) {
+  districtsByCity[key].sort((a, b) => a.localeCompare(b, 'tr'));
+}
+
+export const districts: Record<string, string[]> = districtsByCity;
