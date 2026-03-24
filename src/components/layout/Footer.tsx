@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { useSections } from '@/components/providers/SectionsProvider';
+import { useTheme } from '@/components/providers/ThemeProvider';
 
 export default function Footer() {
   const { sections } = useSections();
+  const { theme } = useTheme();
   const contact = sections.about_contact?.content as { email?: string; phone?: string } | undefined;
   const email = contact?.email || 'info@engelsizkurye.com';
   const phone = contact?.phone || '+90 212 000 00 00';
@@ -17,7 +19,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-0 mb-4">
-              <img src="/EngelsizKuryeLogoNew.png" alt="Engelsiz Kurye" className="h-[4.5rem] w-auto -mr-1" />
+              <img
+                src={theme === 'light' ? '/engelsizKuryeSiyahLogo.jpeg' : '/EngelsizKuryeLogoNew.png'}
+                alt="Engelsiz Kurye"
+                className="h-[4.5rem] w-auto -mr-1"
+              />
               <span className="font-bold text-white">Engelsiz Kurye</span>
             </Link>
             <p className="text-zinc-500 text-sm leading-relaxed max-w-xs">

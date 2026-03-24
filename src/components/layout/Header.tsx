@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { AnimatedThemeToggler } from '@/components/ui/AnimatedThemeToggler';
+import { useTheme } from '@/components/providers/ThemeProvider';
 import MobileMenu from './MobileMenu';
 
 const navLinks = [
@@ -20,6 +21,7 @@ export default function Header() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -43,7 +45,11 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-0 group">
-          <img src="/EngelsizKuryeLogoNew.png" alt="Engelsiz Kurye" className="h-20 w-auto -mr-1" />
+          <img
+            src={theme === 'light' ? '/engelsizKuryeSiyahLogo.jpeg' : '/EngelsizKuryeLogoNew.png'}
+            alt="Engelsiz Kurye"
+            className="h-20 w-auto -mr-1"
+          />
           <div className="flex flex-col leading-none">
             <span className="font-bold text-[15px] text-white tracking-tight">Engelsiz</span>
             <span className="font-bold text-[15px] text-amber-500 tracking-tight">Kurye</span>
