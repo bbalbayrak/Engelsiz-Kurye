@@ -79,7 +79,7 @@ export default function ResourcesPage() {
                 <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden group cursor-pointer hover:border-zinc-700 transition-colors">
                   <div className="aspect-video bg-gradient-to-br from-zinc-800/80 to-zinc-900 flex items-center justify-center relative">
                     <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
-                      <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                      <svg className="w-6 h-6 text-[#ffffff] ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                     </div>
                   </div>
                   <div className="p-4">

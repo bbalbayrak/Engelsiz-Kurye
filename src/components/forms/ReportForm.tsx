@@ -163,7 +163,7 @@ export default function ReportForm() {
       {/* Auth status */}
       {user ? (
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3.5 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xs font-bold text-[#ffffff] shrink-0">
             {user.name.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">

@@ -7,6 +7,10 @@ import 'leaflet/dist/leaflet.css';
 import { OBSTACLE_CONFIG, type ObstacleReport, type ObstacleType } from '@/types';
 import { formatRelativeDate } from '@/lib/utils';
 import { useEffect } from 'react';
+import { useTheme } from '@/components/providers/ThemeProvider';
+
+const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
 // Parse comma-separated obstacle type string
 function parsePrimaryType(typeStr: string) {
@@ -82,12 +86,12 @@ function LocateControl() {
         container.innerHTML = `
           <button style="
             width:36px;height:36px;
-            background:#18181b;border:1px solid #3f3f46;
+            background:var(--color-surface);border:1px solid var(--color-border);
             border-radius:10px;cursor:pointer;
             display:flex;align-items:center;justify-content:center;
             box-shadow:0 4px 12px rgba(0,0,0,0.4);
           " title="Konumumu bul">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fafafa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-foreground)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m10-10h-4M6 12H2"/>
             </svg>
           </button>`;
@@ -115,8 +119,8 @@ function PopupContent({ report }: { report: ObstacleReport }) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 10 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#fafafa', marginBottom: 2 }}>{report.siteName}</div>
-          <div style={{ fontSize: 12, color: '#a1a1aa', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-foreground)', marginBottom: 2 }}>{report.siteName}</div>
+          <div style={{ fontSize: 12, color: 'var(--color-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
             {report.district}, {report.city}
           </div>
@@ -161,7 +165,7 @@ function PopupContent({ report }: { report: ObstacleReport }) {
 
       {/* Description */}
       {report.description && (
-        <p style={{ fontSize: 12, color: '#a1a1aa', lineHeight: 1.6, marginBottom: 10 }}>
+        <p style={{ fontSize: 12, color: 'var(--color-muted)', lineHeight: 1.6, marginBottom: 10 }}>
           {report.description}
         </p>
       )}
@@ -169,13 +173,13 @@ function PopupContent({ report }: { report: ObstacleReport }) {
       {/* Footer */}
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        borderTop: '1px solid #27272a', paddingTop: 10,
-        fontSize: 11, color: '#71717a',
+        borderTop: '1px solid var(--color-border)', paddingTop: 10,
+        fontSize: 11, color: 'var(--color-muted)',
       }}>
         <span>{formatRelativeDate(report.reportedAt)}</span>
         <span style={{
-          background: '#27272a', borderRadius: 99,
-          padding: '2px 8px', fontSize: 11, color: '#d4d4d8',
+          background: 'var(--color-surface-2)', borderRadius: 99,
+          padding: '2px 8px', fontSize: 11, color: 'var(--color-foreground)',
         }}>{report.reportCount} bildirim</span>
       </div>
     </div>
@@ -190,6 +194,8 @@ interface MapInnerProps {
 
 export default function MapInner({ reports = [] }: MapInnerProps) {
   const data = reports;
+  const { theme } = useTheme();
+  const tileUrl = theme === 'light' ? TILE_LIGHT : TILE_DARK;
 
   return (
     <MapContainer
@@ -199,13 +205,14 @@ export default function MapInner({ reports = [] }: MapInnerProps) {
       maxZoom={18}
       zoomControl={false}
       className="w-full h-full"
-      style={{ background: '#09090b' }}
+      style={{ background: theme === 'light' ? '#f0f0f0' : '#09090b' }}
     >
       <ZoomControl position="bottomleft" />
       <LocateControl />
       <TileLayer
+        key={theme}
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url={tileUrl}
         maxZoom={19}
       />
       <MarkerClusterGroup

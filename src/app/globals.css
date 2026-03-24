@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-@theme inline {
+@theme {
   --color-background: #09090b;
   --color-foreground: #fafafa;
   --color-brand: #f59e0b;
@@ -12,6 +12,23 @@
   --color-muted: #a1a1aa;
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+
+  /* Register zinc scale as CSS variables so they can be overridden per-theme */
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
+
+  /* Register white/black so they can be overridden */
+  --color-white: #ffffff;
+  --color-black: #000000;
 }
 
 html {
@@ -28,14 +45,59 @@ body {
   overflow-x: hidden;
 }
 
+/* ══════════════════════════════════════════════
+   LIGHT THEME — inverts the zinc scale
+   ══════════════════════════════════════════════ */
+[data-theme="light"] {
+  /* Theme tokens */
+  --color-background: #ffffff;
+  --color-foreground: #18181b;
+  --color-surface: #f4f4f5;
+  --color-surface-2: #e4e4e7;
+  --color-border: #d4d4d8;
+  --color-muted: #71717a;
+
+  /* Invert zinc scale so all existing Tailwind classes adapt */
+  --color-zinc-950: #ffffff;
+  --color-zinc-900: #f4f4f5;
+  --color-zinc-800: #e5e7eb;
+  --color-zinc-700: #d1d5db;
+  --color-zinc-600: #6b7280;
+  --color-zinc-500: #4b5563;
+  --color-zinc-400: #374151;
+  --color-zinc-300: #1f2937;
+  --color-zinc-200: #111827;
+  --color-zinc-100: #0a0a0a;
+  --color-zinc-50: #030712;
+
+  /* Make text-white become dark in light mode */
+  --color-white: #111827;
+
+  color-scheme: light;
+}
+
+
+/* ── View Transition (animated theme toggle) ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) { z-index: 9999; }
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
 
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #d4d4d8; }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+
 /* ── Selection ── */
 ::selection { background: rgba(245, 158, 11, 0.3); color: #fff; }
+[data-theme="light"] ::selection { color: #18181b; }
 
 /* ── Focus ring ── */
 *:focus-visible {
@@ -47,15 +109,15 @@ body {
 /* ── Leaflet Map ── */
 .leaflet-container {
   font-family: var(--font-sans) !important;
-  background: #09090b !important;
+  background: var(--color-background) !important;
 }
 
 .leaflet-popup-content-wrapper {
-  background: #18181b !important;
-  color: #fafafa !important;
+  background: var(--color-surface) !important;
+  color: var(--color-foreground) !important;
   border-radius: 16px !important;
-  border: 1px solid #3f3f46 !important;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6) !important;
+  border: 1px solid var(--color-border) !important;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25) !important;
   padding: 0 !important;
 }
 
@@ -69,7 +131,7 @@ body {
 .leaflet-popup-tip-container { display: none !important; }
 
 .leaflet-popup-close-button {
-  color: #a1a1aa !important;
+  color: var(--color-muted) !important;
   font-size: 20px !important;
   top: 8px !important;
   right: 10px !important;
@@ -80,16 +142,16 @@ body {
 .leaflet-popup-close-button:hover { color: #f59e0b !important; }
 
 .leaflet-control-zoom {
-  border: 1px solid #3f3f46 !important;
+  border: 1px solid var(--color-border) !important;
   border-radius: 12px !important;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
 
 .leaflet-control-zoom a {
-  background: #18181b !important;
-  color: #fafafa !important;
-  border-color: #3f3f46 !important;
+  background: var(--color-surface) !important;
+  color: var(--color-foreground) !important;
+  border-color: var(--color-border) !important;
   width: 36px !important;
   height: 36px !important;
   line-height: 36px !important;
@@ -97,19 +159,19 @@ body {
 }
 
 .leaflet-control-zoom a:hover {
-  background: #27272a !important;
+  background: var(--color-surface-2) !important;
   color: #f59e0b !important;
 }
 
 .leaflet-control-attribution {
-  background: rgba(9,9,11,0.85) !important;
-  color: #71717a !important;
+  background: color-mix(in srgb, var(--color-background) 85%, transparent) !important;
+  color: var(--color-muted) !important;
   font-size: 10px !important;
   padding: 2px 8px !important;
   border-radius: 8px 0 0 0 !important;
 }
 
-.leaflet-control-attribution a { color: #a1a1aa !important; }
+.leaflet-control-attribution a { color: var(--color-muted) !important; }
 
 /* Cluster overrides */
 .marker-cluster,
@@ -141,13 +203,17 @@ body {
 .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 
-/* ── Select Arrow (dark mode) ── */
+/* ── Select Arrow ── */
 select {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a1a1aa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.75rem center;
   background-repeat: no-repeat;
   background-size: 1.25em 1.25em;
   padding-right: 2.5rem;
+}
+
+[data-theme="light"] select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
 }
 
 /* ── Thumb-friendly on mobile ── */

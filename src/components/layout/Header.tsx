@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { AnimatedThemeToggler } from '@/components/ui/AnimatedThemeToggler';
 import MobileMenu from './MobileMenu';
 
 const navLinks = [
@@ -35,7 +36,7 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-[1100] transition-all duration-300 ${
         scrolled
-          ? 'bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-800/60 shadow-lg shadow-black/20'
+          ? 'bg-zinc-950/90 backdrop-blur-xl border-b border-zinc-800/60 shadow-lg shadow-zinc-950/20'
           : 'bg-transparent'
       }`}
     >
@@ -85,7 +86,7 @@ export default function Header() {
                   </Link>
                 )}
                 <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-zinc-800/40 border border-zinc-800/60">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xs font-bold text-white">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xs font-bold text-[#ffffff]">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-zinc-300 max-w-[120px] truncate">{user.name}</span>
@@ -127,6 +128,9 @@ export default function Header() {
             </span>
             Engel Bildir
           </Link>
+
+          {/* Theme Toggle */}
+          <AnimatedThemeToggler />
 
           {/* Mobile Menu Button */}
           <button

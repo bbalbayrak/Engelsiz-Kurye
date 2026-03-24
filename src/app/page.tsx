@@ -30,7 +30,7 @@ export default function HomePage() {
   return (
     <div>
       {/* ── Full-screen Map ── */}
-      <div className="relative h-[calc(100dvh-4rem)]">
+      <div className="relative isolate h-[calc(100dvh-4rem)]">
         <MapContainer />
 
         <div className="absolute top-4 left-4 z-[1000] hidden sm:block">
@@ -67,10 +67,10 @@ export default function HomePage() {
 
         <div className="absolute bottom-5 left-4 right-4 md:left-auto md:right-5 z-[1000]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <Link href="/engel-bildir"
-            className="flex items-center justify-center gap-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white font-bold py-4 px-8 rounded-2xl text-base transition-all shadow-xl shadow-red-500/25 hover:shadow-red-500/40 md:py-3 md:px-6 md:text-sm md:rounded-full animate-pulse-glow">
+            className="flex items-center justify-center gap-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-[#ffffff] font-bold py-4 px-8 rounded-2xl text-base transition-all shadow-xl shadow-red-500/25 hover:shadow-red-500/40 md:py-3 md:px-6 md:text-sm md:rounded-full animate-pulse-glow">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ffffff] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ffffff]" />
             </span>
             Hemen Engel Bildir
           </Link>

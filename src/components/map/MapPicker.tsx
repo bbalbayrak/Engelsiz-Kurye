@@ -4,6 +4,10 @@ import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-lea
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useCallback } from 'react';
+import { useTheme } from '@/components/providers/ThemeProvider';
+
+const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
 const pinIcon = L.divIcon({
   html: `
@@ -97,12 +101,12 @@ function LocateButton() {
         container.innerHTML = `
           <button style="
             width:36px;height:36px;
-            background:#18181b;border:1px solid #3f3f46;
+            background:var(--color-surface);border:1px solid var(--color-border);
             border-radius:10px;cursor:pointer;
             display:flex;align-items:center;justify-content:center;
             box-shadow:0 4px 12px rgba(0,0,0,0.4);
           " title="Konumumu bul">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fafafa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-foreground)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4m10-10h-4M6 12H2"/>
             </svg>
           </button>`;
@@ -130,10 +134,12 @@ export default function MapPicker({ latitude, longitude, onChange }: MapPickerPr
   const hasPin = latitude !== null && longitude !== null;
   const center: [number, number] = hasPin ? [latitude, longitude] : [39.2, 35.2];
   const zoom = hasPin ? 16 : 6;
+  const { theme } = useTheme();
+  const tileUrl = theme === 'light' ? TILE_LIGHT : TILE_DARK;
 
   return (
     <div className="space-y-2">
-      <div className="relative rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900" style={{ height: 350 }}>
+      <div className="relative isolate rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900" style={{ height: 350 }}>
         <MapContainer
           center={center}
           zoom={zoom}
@@ -141,11 +147,12 @@ export default function MapPicker({ latitude, longitude, onChange }: MapPickerPr
           maxZoom={18}
           zoomControl={false}
           className="w-full h-full"
-          style={{ background: '#09090b' }}
+          style={{ background: theme === 'light' ? '#f0f0f0' : '#09090b' }}
         >
           <TileLayer
+            key={theme}
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            url={tileUrl}
             maxZoom={19}
           />
           <LocateButton />
