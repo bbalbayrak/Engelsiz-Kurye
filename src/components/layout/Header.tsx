@@ -46,7 +46,7 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-0 group">
           <img
-            src={theme === 'light' ? '/engelsizKuryeSiyahLogo.jpeg' : '/EngelsizKuryeLogoNew.png'}
+            src={theme === 'light' ? '/engelsizKuryeSiyahLogoArkaPlan.png' : '/EngelsizKuryeLogoNew.png'}
             alt="Engelsiz Kurye"
             className="h-20 w-auto -mr-1"
           />

@@ -20,7 +20,7 @@ export default function Footer() {
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-0 mb-4">
               <img
-                src={theme === 'light' ? '/engelsizKuryeSiyahLogo.jpeg' : '/EngelsizKuryeLogoNew.png'}
+                src={theme === 'light' ? '/engelsizKuryeSiyahLogoArkaPlan.png' : '/EngelsizKuryeLogoNew.png'}
                 alt="Engelsiz Kurye"
                 className="h-[4.5rem] w-auto -mr-1"
               />
